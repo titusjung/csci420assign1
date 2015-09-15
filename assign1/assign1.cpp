@@ -71,14 +71,12 @@ void myinit()
 	glLoadIdentity();
 	gluPerspective(60, 1, .01, 1000);
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity(); // reset transformation
-	glTranslatef(g_pHeightData->ny/(float)2, g_pHeightData->nx/ (float)2, 300);
-	glRotatef(0, 1, 0, 0);
 
-
-	glScalef(0,0, 0);
+	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
+
+	glLoadIdentity();
+	//gluLookAt(100, 100, 100, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
 }
 
@@ -89,41 +87,40 @@ void display()
 	/* you may also want to precede it with your
   rotation/translation/scaling */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
+	//glMatrixMode(GL_PROJECTION);
+	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity(); // reset transformation
+
 	glTranslatef(g_vLandTranslate[0], g_vLandTranslate[1], g_vLandTranslate[2]);
 	glRotatef(g_vLandRotate[0], 1, 0, 0);
 	glRotatef(g_vLandRotate[1], 0, 1, 0);
 	glRotatef(g_vLandRotate[2], 0, 0, 1);
-
 	glScalef(g_vLandScale[0], g_vLandScale[1], g_vLandScale[2]);
-	glPushMatrix();
-
-	glMatrixMode(GL_MODELVIEW);
 
 	//glBegin(GL_POLYGON);
+
 	for (int i = 0; i < g_pHeightData->ny-1; i++)
 	{
 		glBegin(GL_TRIANGLE_STRIP);
 		for (int j = 0; j < g_pHeightData->nx; j++)
 		{
-			//(float)i / (float)g_pHeightData->ny
-
-		unsigned char heightVal = PIC_PIXEL(g_pHeightData,j, i+1, 0);
-		unsigned char heightVal2 = PIC_PIXEL(g_pHeightData, j, i, 0);
+		unsigned char heightVal = PIC_PIXEL(g_pHeightData,j, i, 0);
+		unsigned char heightVal2 = PIC_PIXEL(g_pHeightData, j, i+1, 0);
 
 		glColor3f((float)heightVal / (float)255, (float)heightVal / (float)255, (float)heightVal/(float)255);
-		glVertex3f((float)i / (float)g_pHeightData->ny, (float)j / (float)g_pHeightData->nx, (float)heightVal/(float)255);
+		glVertex3f((float)j / (float)g_pHeightData->nx, (float)i / (float)g_pHeightData->ny, (float)heightVal/(float)255);
 		glColor3f((float)heightVal2 / (float)255, (float)heightVal2 / (float)255, (float)heightVal2/ (float)255);
 
-		glVertex3f((float)(i +1)/ (float)g_pHeightData->ny, (float)j / (float)g_pHeightData->nx, (float)heightVal2 / (float)255);
+		glVertex3f((float)j / (float)g_pHeightData->nx, (float)(i + 1) / (float)g_pHeightData->ny, (float)heightVal2 / (float)255);
 
 		}
 		glEnd();
 
 	}
 	//glEnd();
+
+	//red z axis line
 	glBegin(GL_LINES);
 	glColor3f(1.0, 0,0 );
 	glVertex3f(0,0,0);
@@ -131,19 +128,25 @@ void display()
 	glVertex3f(0, 0, 100);
 	glEnd();
 
+	//green x axis line
 	glBegin(GL_LINES);
 	glColor3f(0, 1.0, 0);
 	glVertex3f(0, 0, 0);
 	glColor3f(1.0, 1.0, 1.0);
 	glVertex3f(100, 0, 0);
 	glEnd();
-	
+
+	//blue y axis line
 	glBegin(GL_LINES);
 	glColor3f(0, 0, 1.0);
 	glVertex3f(0, 0, 0);
 	glColor3f(0, 0, 1.0);
 	glVertex3f(0, 100, 0);
-	glEnd();
+	glEnd();	
+
+
+	//glPopMatrix();
+
 	/*
 	glBegin(GL_POLYGON);
 
